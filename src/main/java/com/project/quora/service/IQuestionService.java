@@ -16,5 +16,5 @@ public interface IQuestionService {
 
     Mono<Void> deleteQuestionById(String id);
 
-    Mono<QuestionPageResponseDTO> searchQuestionsByTitle(String title, int page, int size);
+    Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(String title, int page, int size);
 }

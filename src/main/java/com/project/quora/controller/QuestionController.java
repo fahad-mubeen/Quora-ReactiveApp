@@ -39,11 +39,11 @@ public class QuestionController {
     }
 
     @GetMapping("/search")
-    public Mono<QuestionPageResponseDTO> searchQuestionsByTitle(
+    public Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(
             @RequestParam(defaultValue = "Sample") String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size)
     {
-        return questionService.searchQuestionsByTitle(title, page, size);
+        return questionService.searchQuestionsByTitleContaining(title, page, size);
     }
 }

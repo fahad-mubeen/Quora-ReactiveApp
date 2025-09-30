@@ -60,7 +60,7 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public Mono<QuestionPageResponseDTO> searchQuestionsByTitle(String title, int page, int size) {
+    public Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Flux<QuestionResponseDTO> questionFlux = questionRepository
                 .findByTitleIsContainingIgnoreCase(title)
