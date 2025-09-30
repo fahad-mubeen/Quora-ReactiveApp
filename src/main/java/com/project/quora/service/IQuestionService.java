@@ -1,5 +1,6 @@
 package com.project.quora.service;
 
+import com.project.quora.dto.QuestionPageResponseDTO;
 import com.project.quora.dto.QuestionRequestDTO;
 import com.project.quora.dto.QuestionResponseDTO;
 import reactor.core.publisher.Flux;
@@ -14,4 +15,6 @@ public interface IQuestionService {
     Flux<QuestionResponseDTO> getAllQuestions();
 
     Mono<Void> deleteQuestionById(String id);
+
+    Mono<QuestionPageResponseDTO> searchQuestionsByTitle(String title, int page, int size);
 }

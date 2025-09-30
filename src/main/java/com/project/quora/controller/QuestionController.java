@@ -1,5 +1,6 @@
 package com.project.quora.controller;
 
+import com.project.quora.dto.QuestionPageResponseDTO;
 import com.project.quora.dto.QuestionRequestDTO;
 import com.project.quora.dto.QuestionResponseDTO;
 import com.project.quora.service.IQuestionService;
@@ -35,5 +36,14 @@ public class QuestionController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteQuestion(@PathVariable String id) {
         return questionService.deleteQuestionById(id);
+    }
+
+    @GetMapping("/search")
+    public Mono<QuestionPageResponseDTO> searchQuestionsByTitle(
+            @RequestParam(defaultValue = "Sample") String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size)
+    {
+        return questionService.searchQuestionsByTitle(title, page, size);
     }
 }

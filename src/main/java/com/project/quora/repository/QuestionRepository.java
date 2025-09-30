@@ -6,6 +6,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface QuestionRepository extends ReactiveMongoRepository<Question, String> {
+    Flux<Question> findByTitleIsContainingIgnoreCase(String title);
+
+    Mono<Long> countByTitleContainingIgnoreCase(String title);
 
 //    Flux<Question> findByAuthorId(String authorId);
 
