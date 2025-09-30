@@ -1,12 +1,19 @@
 package com.project.quora.repository;
 
 import com.project.quora.model.Question;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface QuestionRepository extends ReactiveMongoRepository<Question, String> {
-    Flux<Question> findByTitleIsContainingIgnoreCase(String title);
+
+    @Query("{ $or: [ { 'title': { $regex: ?0, $options: 'i' } }, { 'content': { $regex: ?0, $options: 'i' } } ] }")
+    Flux<Question> findByTitleOrContentContainingIgnoreCase(String searchTerm);
+
+    @Query("{ 'title': { $regex: ?0, $options: 'i' } }")
+    Flux<Question> findByTitleContainingIgnoreCase(String searchTerm, Pageable pageable);
 
     Mono<Long> countByTitleContainingIgnoreCase(String title);
 

@@ -63,9 +63,7 @@ public class QuestionService implements IQuestionService {
     public Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Flux<QuestionResponseDTO> questionFlux = questionRepository
-                .findByTitleIsContainingIgnoreCase(title)
-                .skip(pageable.getOffset()) // page * size
-                .take(size)
+                .findByTitleContainingIgnoreCase(title, pageable)
                 .map(QuestionMapper::toQuestionResponseDTO);
 
         Mono<Long> totalCount = questionRepository.countByTitleContainingIgnoreCase(title);
