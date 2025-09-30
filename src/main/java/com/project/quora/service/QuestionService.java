@@ -7,6 +7,7 @@ import com.project.quora.dto.QuestionResponseDTO;
 import com.project.quora.mapper.QuestionMapper;
 import com.project.quora.model.Question;
 import com.project.quora.repository.QuestionRepository;
+import com.project.quora.utils.CursorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 
 
 @Service
@@ -68,6 +70,34 @@ public class QuestionService implements IQuestionService {
 
         Mono<Long> totalCount = questionRepository.countByTitleContainingIgnoreCase(title);
         return QuestionMapper.toQuestionPageResponseDTO(questionFlux, totalCount);
+    }
+
+    @Override
+    public Flux<QuestionResponseDTO> getPaginatedQuestions(String cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+
+        if (!CursorUtils.isValidCursor(cursor)) {
+            return questionRepository.findTop10ByOrderByCreatedAtDesc()
+                    .take(Math.min(size, 10))
+                    .map(QuestionMapper::toQuestionResponseDTO)
+                    .doOnError(err -> {
+                        System.err.println("Error getting questions by cursor: " + err.getMessage());
+                    })
+                    .doOnComplete(() -> {
+                        System.out.println("Fetched questions after cursor: " + cursor);
+                    });
+        } else {
+            LocalDateTime cursorTimeStamp = CursorUtils.parseCursor(cursor);
+            return questionRepository
+                    .findByCreatedAtGreaterThanOrderByCreatedAtDesc(cursorTimeStamp, pageable)
+                    .map(QuestionMapper::toQuestionResponseDTO)
+                    .doOnError(err -> {
+                        System.err.println("Error getting questions by cursor: " + err.getMessage());
+                    })
+                    .doOnComplete(() -> {
+                        System.out.println("Fetched questions after cursor: " + cursor);
+                    });
+        }
     }
 
 }

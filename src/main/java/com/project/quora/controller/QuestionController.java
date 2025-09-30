@@ -26,6 +26,14 @@ public class QuestionController {
         return questionService.getAllQuestions();
     }
 
+    @GetMapping(params = {"size"})
+    Flux<QuestionResponseDTO> getPaginatedQuestions(
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "2") int size
+    ) {
+        return questionService.getPaginatedQuestions(cursor, size);
+    }
+
     @PostMapping
     public Mono<QuestionResponseDTO> createQuestion(@RequestBody QuestionRequestDTO questionRequestDTO) {
         return questionService.createQuestion(questionRequestDTO)

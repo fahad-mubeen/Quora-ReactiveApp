@@ -1,11 +1,14 @@
 package com.project.quora.repository;
 
+import com.project.quora.dto.QuestionResponseDTO;
 import com.project.quora.model.Question;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
 
 public interface QuestionRepository extends ReactiveMongoRepository<Question, String> {
 
@@ -17,8 +20,7 @@ public interface QuestionRepository extends ReactiveMongoRepository<Question, St
 
     Mono<Long> countByTitleContainingIgnoreCase(String title);
 
-//    Flux<Question> findByAuthorId(String authorId);
+    Flux<Question> findByCreatedAtGreaterThanOrderByCreatedAtDesc(LocalDateTime localDateTime, Pageable pageable);
 
-//    Mono<Long> countByAuthorId(String authorId);
-
+    Flux<Question> findTop10ByOrderByCreatedAtDesc();
 }

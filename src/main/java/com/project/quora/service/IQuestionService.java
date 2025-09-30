@@ -17,4 +17,6 @@ public interface IQuestionService {
     Mono<Void> deleteQuestionById(String id);
 
     Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(String title, int page, int size);
+
+    Flux<QuestionResponseDTO> getPaginatedQuestions(String cursor, int size);
 }
