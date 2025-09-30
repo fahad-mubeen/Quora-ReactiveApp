@@ -22,6 +22,7 @@ public class QuestionMapper {
                 .title(question.getTitle())
                 .content(question.getContent())
                 .createAt(question.getCreatedAt())
+                .updatedAt(question.getUpdatedAt())
                 .build();
     }
 }

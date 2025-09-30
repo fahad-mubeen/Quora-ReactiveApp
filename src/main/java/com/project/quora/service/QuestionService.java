@@ -8,6 +8,7 @@ import com.project.quora.model.Question;
 import com.project.quora.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -30,6 +31,27 @@ public class QuestionService implements IQuestionService {
                 .doOnError(err -> {
                     System.err.println("Error creating question: " + err.getMessage());
                 });
+    }
+
+    @Override
+    public Mono<QuestionResponseDTO> getQuestionById(String id) {
+        Mono<Question> question = questionRepository.findById(id);
+        return question.map(QuestionMapper::toQuestionResponseDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Question not found")));
+    }
+
+    @Override
+    public Flux<QuestionResponseDTO> getAllQuestions() {
+        return questionRepository.findAll().map(QuestionMapper::toQuestionResponseDTO);
+    }
+
+    @Override
+    public Mono<Void> deleteQuestionById(String id) {
+        return questionRepository.deleteById(id).doOnSuccess(res -> {
+            System.out.println("Question deleted with ID: " + id);
+        }).doOnError(err -> {
+            System.err.println("Error deleting question: " + err.getMessage());
+        });
     }
 
 }

@@ -18,4 +18,6 @@ public class QuestionResponseDTO {
     private String content;
 
     private LocalDateTime createAt;
+
+    private LocalDateTime updatedAt;
 }
