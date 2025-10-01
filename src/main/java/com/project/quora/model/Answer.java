@@ -16,18 +16,21 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @Builder
-@Document(collection = "questions")
-public class Question {
+@Document(collection = "answers")
+public class Answer {
 
     @Id
     private String id;
+
+    @Indexed
+    private String questionId;
 
     @NotBlank(message = "Title is required")
     @Size(min = 1, max = 250, message = "Title must be between 1 and 250 characters")
     private String title;
 
     @NotBlank(message = "Content is required")
-    @Size(min = 1, max = 1000, message = "Content must be between 1 and 1000 characters")
+    @Size(min = 1, max = 10000, message = "Content must be between 1 and 10000 characters")
     private String content;
 
     @CreatedDate

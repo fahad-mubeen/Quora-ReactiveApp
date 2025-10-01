@@ -1,7 +1,6 @@
 package com.project.quora.model;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.databind.annotation.EnumNaming;
+import com.project.quora.enums.LikeFor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,19 +15,15 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @Builder
-@Document(collection = "questions")
-public class Question {
-
+@Document(collection = "likes")
+public class Like {
     @Id
     private String id;
 
-    @NotBlank(message = "Title is required")
-    @Size(min = 1, max = 250, message = "Title must be between 1 and 250 characters")
-    private String title;
+    @Indexed
+    private LikeFor likeFor; // Enum to specify if it's for QUESTION, ANSWER, or COMMENT
 
-    @NotBlank(message = "Content is required")
-    @Size(min = 1, max = 1000, message = "Content must be between 1 and 1000 characters")
-    private String content;
+    boolean isUpvoted; // true for upvote, false for downvote
 
     @CreatedDate
     @Indexed
