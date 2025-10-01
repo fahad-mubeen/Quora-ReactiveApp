@@ -21,6 +21,8 @@ public class Like {
     private String id;
 
     @Indexed
+    private String LikeForId;
+
     private LikeFor likeFor; // Enum to specify if it's for QUESTION, ANSWER, or COMMENT
 
     boolean isUpvoted; // true for upvote, false for downvote
