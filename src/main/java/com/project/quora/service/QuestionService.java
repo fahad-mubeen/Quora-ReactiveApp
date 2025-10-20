@@ -29,7 +29,7 @@ public class QuestionService implements IQuestionService {
         Question question = QuestionMapper.toQuestion(questionRequestDTO);
 
         Mono<Question> saved = questionRepository.save(question);
-        Mono<QuestionResponseDTO> response = saved.map(q -> QuestionMapper.toQuestionResponseDTO(q));
+        Mono<QuestionResponseDTO> response = saved.map(QuestionMapper::toQuestionResponseDTO);
 
         return response
                 .doOnSuccess(res -> {
