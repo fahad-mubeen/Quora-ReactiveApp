@@ -1,6 +1,5 @@
 package com.project.quora.model;
-import com.fasterxml.jackson.databind.annotation.EnumNaming;
-import com.project.quora.enums.LikeFor;
+import com.project.quora.enums.TargetType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,11 +20,11 @@ public class Like {
     private String id;
 
     @Indexed
-    private String LikeForId;
+    private String targetId; // ID of the QUESTION, ANSWER, or COMMENT being liked/disliked
 
-    private LikeFor likeFor; // Enum to specify if it's for QUESTION, ANSWER, or COMMENT
+    private TargetType targetType; // Enum to specify if it's for QUESTION, ANSWER, or COMMENT
 
-    boolean isUpvoted; // true for upvote, false for downvote
+    boolean upvoted; // true for upvote, false for downvote
 
     @CreatedDate
     @Indexed

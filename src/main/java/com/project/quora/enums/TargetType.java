@@ -1,6 +1,6 @@
 package com.project.quora.enums;
 
-public enum LikeFor {
+public enum TargetType {
     QUESTION,
     ANSWER,
     COMMENT

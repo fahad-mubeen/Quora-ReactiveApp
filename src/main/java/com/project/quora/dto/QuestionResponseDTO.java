@@ -17,6 +17,8 @@ public class QuestionResponseDTO {
 
     private String content;
 
+    private Integer viewCount;
+
     private LocalDateTime createAt;
 
     private LocalDateTime updatedAt;

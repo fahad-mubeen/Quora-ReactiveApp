@@ -30,6 +30,8 @@ public class Question {
     @Size(min = 1, max = 1000, message = "Content must be between 1 and 1000 characters")
     private String content;
 
+    private Integer viewCount;
+
     @CreatedDate
     @Indexed
     private LocalDateTime createdAt;

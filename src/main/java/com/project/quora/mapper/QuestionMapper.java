@@ -14,6 +14,7 @@ public class QuestionMapper {
         return Question.builder()
                 .title(questionRequestDTO.getTitle())
                 .content(questionRequestDTO.getContent())
+                .viewCount(0)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -24,6 +25,7 @@ public class QuestionMapper {
                 .id(question.getId())
                 .title(question.getTitle())
                 .content(question.getContent())
+                .viewCount(question.getViewCount())
                 .createAt(question.getCreatedAt())
                 .updatedAt(question.getUpdatedAt())
                 .build();
