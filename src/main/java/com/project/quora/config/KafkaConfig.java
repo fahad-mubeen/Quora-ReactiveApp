@@ -23,8 +23,7 @@ public class KafkaConfig {
     @Value("${kafka.bootstrap-server:localhost:9092}")
     private String bootstrapServer;
 
-    @Value("${kafka.consumer-group-id:view-count-consumer-group}")
-    private String consumerGroupId;
+    public static final String consumerGroupId = "view-count-consumer-group";
 
     public static final String TOPIC_NAME = "view-count-topic";
 
