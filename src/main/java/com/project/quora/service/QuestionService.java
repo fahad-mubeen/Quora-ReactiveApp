@@ -46,14 +46,18 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public Mono<QuestionResponseDTO> getQuestionById(String id) {
-        Mono<Question> question = questionRepository.findById(id);
-        return question.map(QuestionMapper::toQuestionResponseDTO)
+    public Mono<QuestionResponseDTO> getQuestionById(String questionId) {
+        return questionRepository.findById(questionId)
+                .map(QuestionMapper::toQuestionResponseDTO)
                 .doOnError(err -> System.out.println("Error fetching question by ID: " + err.getMessage()))
                 .doOnSuccess(res -> {
-                    System.out.println("Question fetched with ID: " + res.getId());
-                    ViewCountEvent viewCountEvent = new ViewCountEvent(id, TargetType.QUESTION, LocalDateTime.now());
-                    kafkaEventProducer.publishViewCountEvent(viewCountEvent);
+                    kafkaEventProducer.publishViewCountEvent(
+                            ViewCountEvent.builder()
+                                    .targetId(questionId)
+                                    .targetType(TargetType.QUESTION)
+                                    .timestamp(LocalDateTime.now())
+                                    .build()
+                    );
                 });
     }
 
@@ -63,9 +67,9 @@ public class QuestionService implements IQuestionService {
     }
 
     @Override
-    public Mono<Void> deleteQuestionById(String id) {
-        return questionRepository.deleteById(id).doOnSuccess(res -> {
-            System.out.println("Question deleted with ID: " + id);
+    public Mono<Void> deleteQuestionById(String questionId) {
+        return questionRepository.deleteById(questionId).doOnSuccess(res -> {
+            System.out.println("Question deleted with ID: " + questionId);
         }).doOnError(err -> {
             System.err.println("Error deleting question: " + err.getMessage());
         });

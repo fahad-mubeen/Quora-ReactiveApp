@@ -11,11 +11,11 @@ public interface IQuestionService {
 
     Mono<QuestionResponseDTO> createQuestion(QuestionRequestDTO questionRequestDTO);
 
-    Mono<QuestionResponseDTO> getQuestionById(String id);
+    Mono<QuestionResponseDTO> getQuestionById(String questionId);
 
     Flux<QuestionResponseDTO> getAllQuestions();
 
-    Mono<Void> deleteQuestionById(String id);
+    Mono<Void> deleteQuestionById(String questionId);
 
     Mono<PaginatedResponse<QuestionResponseDTO>> searchQuestionsByTitleContaining(String title, int page, int size);
 

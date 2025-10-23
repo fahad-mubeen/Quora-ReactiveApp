@@ -18,6 +18,8 @@ public class AnswerResponseDTO {
 
     private String content;
 
+    private Integer viewCount;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

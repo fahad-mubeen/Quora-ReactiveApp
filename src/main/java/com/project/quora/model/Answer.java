@@ -33,6 +33,8 @@ public class Answer {
     @Size(min = 1, max = 10000, message = "Content must be between 1 and 10000 characters")
     private String content;
 
+    private Integer viewCount;
+
     @CreatedDate
     @Indexed
     private LocalDateTime createdAt;

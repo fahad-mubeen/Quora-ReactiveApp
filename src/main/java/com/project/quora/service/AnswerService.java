@@ -4,15 +4,17 @@ import com.project.quora.dto.AnswerRequestDTO;
 import com.project.quora.dto.AnswerResponseDTO;
 import com.project.quora.dto.PaginatedResponse;
 import com.project.quora.dto.PaginationMeta;
+import com.project.quora.enums.TargetType;
+import com.project.quora.event.ViewCountEvent;
 import com.project.quora.mapper.AnswerMapper;
 import com.project.quora.model.Answer;
+import com.project.quora.producer.KafkaEventProducer;
 import com.project.quora.repository.AnswerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -23,6 +25,8 @@ import java.util.List;
 public class AnswerService implements IAnswerService {
 
     private final AnswerRepository answerRepository;
+
+    private final KafkaEventProducer kafkaEventProducer;
 
     @Override
     public Mono<AnswerResponseDTO> createAnswer(AnswerRequestDTO answerRequestDTO) {
@@ -128,7 +132,17 @@ public class AnswerService implements IAnswerService {
     @Override
     public Mono<AnswerResponseDTO> getAnswerById(String answerId) {
         return answerRepository.findById(answerId)
-                .map(AnswerMapper::toAnswerResponseDTO);
+                .map(AnswerMapper::toAnswerResponseDTO)
+                .doOnError(err -> System.out.println("Error fetching answer: " + err.getMessage()))
+                .doOnSuccess( res -> {
+                    kafkaEventProducer.publishViewCountEvent(
+                            ViewCountEvent.builder()
+                                    .targetId(answerId)
+                                    .targetType(TargetType.ANSWER)
+                                    .timestamp(LocalDateTime.now())
+                                    .build()
+                    );
+                });
     }
 }
 

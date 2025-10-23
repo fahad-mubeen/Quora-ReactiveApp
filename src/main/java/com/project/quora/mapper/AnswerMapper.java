@@ -12,6 +12,7 @@ public class AnswerMapper {
                 .questionId(answerRequestDTO.getQuestionId())
                 .title(answerRequestDTO.getTitle())
                 .content(answerRequestDTO.getContent())
+                .viewCount(0)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -23,6 +24,7 @@ public class AnswerMapper {
                 .questionId(answer.getQuestionId())
                 .title(answer.getTitle())
                 .content(answer.getContent())
+                .viewCount(answer.getViewCount())
                 .createdAt(answer.getCreatedAt())
                 .updatedAt(answer.getUpdatedAt())
                 .build();
