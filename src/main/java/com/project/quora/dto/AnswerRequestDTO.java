@@ -11,6 +11,9 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class AnswerRequestDTO {
+
+    private String id;
+
     @NotBlank
     @NotEmpty
     private String questionId;
