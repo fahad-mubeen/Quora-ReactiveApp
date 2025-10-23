@@ -6,6 +6,9 @@ import com.project.quora.mapper.AnswerMapper;
 import com.project.quora.model.Answer;
 import com.project.quora.repository.AnswerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -48,15 +51,17 @@ public class AnswerService implements IAnswerService {
     }
 
     @Override
-    public Flux<AnswerResponseDTO> getAllAnswers() {
-        Flux<Answer> answers = answerRepository.findAll();
-        return answers.map(AnswerMapper::toAnswerResponseDTO);
+    public Flux<AnswerResponseDTO> getAllAnswers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return answerRepository.findAll(pageable)
+                .map(AnswerMapper::toAnswerResponseDTO);
     }
 
     @Override
-    public Flux<AnswerResponseDTO> getAnswersByQuestionId(String questionId) {
-        Flux<Answer> answers = answerRepository.findByQuestionId(questionId);
-        return answers.map(AnswerMapper::toAnswerResponseDTO);
+    public Flux<AnswerResponseDTO> getAnswersByQuestionId(String questionId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return answerRepository.findByQuestionId(questionId, pageable)
+                .map(AnswerMapper::toAnswerResponseDTO);
     }
 
     @Override

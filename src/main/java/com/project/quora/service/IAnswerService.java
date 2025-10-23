@@ -13,9 +13,9 @@ public interface IAnswerService {
 
     Mono<Void> deleteAnswer(String answerId);
 
-    Flux<AnswerResponseDTO> getAllAnswers();
+    Flux<AnswerResponseDTO> getAllAnswers(int page, int size);
 
-    Flux<AnswerResponseDTO> getAnswersByQuestionId(String questionId);
+    Flux<AnswerResponseDTO> getAnswersByQuestionId(String questionId, int page, int size);
 
     Mono<AnswerResponseDTO> getAnswerById(String answerId);
 }

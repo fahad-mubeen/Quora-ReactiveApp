@@ -14,6 +14,7 @@ import com.project.quora.utils.CursorUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -73,7 +74,7 @@ public class QuestionService implements IQuestionService {
 
     @Override
     public Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(String title, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Flux<QuestionResponseDTO> questionFlux = questionRepository
                 .findByTitleContainingIgnoreCase(title, pageable)
                 .map(QuestionMapper::toQuestionResponseDTO);

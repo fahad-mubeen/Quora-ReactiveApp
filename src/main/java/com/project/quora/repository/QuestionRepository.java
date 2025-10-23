@@ -1,6 +1,5 @@
 package com.project.quora.repository;
 
-import com.project.quora.dto.QuestionResponseDTO;
 import com.project.quora.model.Question;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;

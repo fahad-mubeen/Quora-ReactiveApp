@@ -31,13 +31,20 @@ public class AnswerController {
     }
 
     @GetMapping
-    public Flux<AnswerResponseDTO> getAllAnswers() {
-        return answerService.getAllAnswers();
+    public Flux<AnswerResponseDTO> getAllAnswers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return answerService.getAllAnswers(page, size);
     }
 
     @GetMapping("/question/{questionId}")
-    public Flux<AnswerResponseDTO> getAnswersByQuestionId(@PathVariable String questionId) {
-        return answerService.getAnswersByQuestionId(questionId);
+    public Flux<AnswerResponseDTO> getAnswersByQuestionId(
+            @PathVariable String questionId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return answerService.getAnswersByQuestionId(questionId, page, size);
     }
 
     @GetMapping("/{answerId}")
