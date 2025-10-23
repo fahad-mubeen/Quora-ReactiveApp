@@ -2,6 +2,8 @@ package com.project.quora.service;
 
 import com.project.quora.dto.AnswerRequestDTO;
 import com.project.quora.dto.AnswerResponseDTO;
+import com.project.quora.dto.PaginatedResponse;
+import com.project.quora.dto.PaginationMeta;
 import com.project.quora.mapper.AnswerMapper;
 import com.project.quora.model.Answer;
 import com.project.quora.repository.AnswerRepository;
@@ -14,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,17 +54,75 @@ public class AnswerService implements IAnswerService {
     }
 
     @Override
-    public Flux<AnswerResponseDTO> getAllAnswers(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return answerRepository.findAll(pageable)
-                .map(AnswerMapper::toAnswerResponseDTO);
+    public Mono<PaginatedResponse<AnswerResponseDTO>> getAllAnswers(int page, int size) {
+        final int effectiveSize = Math.max(1, size);
+
+        Pageable pageable = PageRequest.of(page, effectiveSize, Sort.by("createdAt").descending());
+
+        Mono<List<AnswerResponseDTO>> pageDataMono = answerRepository.findAll(pageable)
+                .map(AnswerMapper::toAnswerResponseDTO)
+                .collectList();
+        Mono<Long> totalCountMono = answerRepository.count();
+
+        return Mono.zip(pageDataMono, totalCountMono)
+                .map(tuple ->{
+                    List<AnswerResponseDTO> answerList = tuple.getT1();
+                    long totalItems = tuple.getT2();
+
+                    int totalPages = (int) Math.ceil((double) totalItems / effectiveSize);
+
+                    String nextUrl = (page + 1 < totalPages)
+                            ? String.format("/api/answers?page=%d&size=%d", page + 1, effectiveSize)
+                            : null;
+
+                    PaginationMeta meta = PaginationMeta.builder()
+                            .totalItems(totalItems)
+                            .currentPage(page)
+                            .pageSize(effectiveSize)
+                            .totalPages(totalPages)
+                            .nextPageUrl(nextUrl)
+                            .build();
+
+                    return PaginatedResponse.<AnswerResponseDTO>builder()
+                            .data(answerList)
+                            .pagination(meta)
+                            .build();
+                });
     }
 
     @Override
-    public Flux<AnswerResponseDTO> getAnswersByQuestionId(String questionId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return answerRepository.findByQuestionId(questionId, pageable)
-                .map(AnswerMapper::toAnswerResponseDTO);
+    public Mono<PaginatedResponse<AnswerResponseDTO>> getAnswersByQuestionId(String questionId, int page, int size) {
+        final int effectiveSize = Math.max(1, size);
+        Pageable pageable = PageRequest.of(page, effectiveSize, Sort.by("createdAt").descending());
+        Mono<List<AnswerResponseDTO>> pageDataMono = answerRepository.findByQuestionId(questionId, pageable)
+                .map(AnswerMapper::toAnswerResponseDTO)
+                .collectList();
+        Mono<Long> totalCountMono = answerRepository.countByQuestionId(questionId);
+
+        return Mono.zip(pageDataMono, totalCountMono)
+                .map(tuple -> {
+                    List<AnswerResponseDTO> answerList = tuple.getT1();
+                    long totalItems = tuple.getT2();
+
+                    int totalPages = (int) Math.ceil((double) totalItems / effectiveSize);
+
+                    String nextUrl = (page + 1 < totalPages)
+                            ? String.format("/api/answers/question/%s?page=%d&size=%d", questionId, page + 1, effectiveSize)
+                            : null;
+
+                    PaginationMeta meta = PaginationMeta.builder()
+                            .totalItems(totalItems)
+                            .currentPage(page)
+                            .pageSize(effectiveSize)
+                            .totalPages(totalPages)
+                            .nextPageUrl(nextUrl)
+                            .build();
+
+                    return PaginatedResponse.<AnswerResponseDTO>builder()
+                            .data(answerList)
+                            .pagination(meta)
+                            .build();
+                });
     }
 
     @Override

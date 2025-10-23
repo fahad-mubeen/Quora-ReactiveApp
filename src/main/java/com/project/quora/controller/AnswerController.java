@@ -2,10 +2,10 @@ package com.project.quora.controller;
 
 import com.project.quora.dto.AnswerRequestDTO;
 import com.project.quora.dto.AnswerResponseDTO;
+import com.project.quora.dto.PaginatedResponse;
 import com.project.quora.service.IAnswerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -31,7 +31,7 @@ public class AnswerController {
     }
 
     @GetMapping
-    public Flux<AnswerResponseDTO> getAllAnswers(
+    public Mono<PaginatedResponse<AnswerResponseDTO>> getAllAnswers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -39,7 +39,7 @@ public class AnswerController {
     }
 
     @GetMapping("/question/{questionId}")
-    public Flux<AnswerResponseDTO> getAnswersByQuestionId(
+    public Mono<PaginatedResponse<AnswerResponseDTO>> getAnswersByQuestionId(
             @PathVariable String questionId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

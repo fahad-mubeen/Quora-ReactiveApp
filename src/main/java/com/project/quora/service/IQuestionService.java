@@ -1,6 +1,7 @@
 package com.project.quora.service;
 
-import com.project.quora.dto.QuestionPageResponseDTO;
+import com.project.quora.dto.CursorPaginatedResponse;
+import com.project.quora.dto.PaginatedResponse;
 import com.project.quora.dto.QuestionRequestDTO;
 import com.project.quora.dto.QuestionResponseDTO;
 import reactor.core.publisher.Flux;
@@ -16,7 +17,7 @@ public interface IQuestionService {
 
     Mono<Void> deleteQuestionById(String id);
 
-    Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(String title, int page, int size);
+    Mono<PaginatedResponse<QuestionResponseDTO>> searchQuestionsByTitleContaining(String title, int page, int size);
 
-    Flux<QuestionResponseDTO> getPaginatedQuestions(String cursor, int size);
+    Mono<CursorPaginatedResponse<QuestionResponseDTO>> getPaginatedQuestions(String cursor, int size);
 }

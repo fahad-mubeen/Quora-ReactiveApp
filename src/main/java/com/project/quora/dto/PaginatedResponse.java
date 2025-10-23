@@ -9,7 +9,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
-public class QuestionPageResponseDTO {
-    private List<QuestionResponseDTO> questionResponseDTO;
-    private Long totalEntries;
+public class PaginatedResponse<T> {
+    private List<T> data;
+    private PaginationMeta pagination;
 }
+

@@ -21,4 +21,11 @@ public class CursorUtils {
         }
         return LocalDateTime.parse(cursor);
     }
+
+    public static String createCursor(LocalDateTime timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return timestamp.toString();
+    }
 }

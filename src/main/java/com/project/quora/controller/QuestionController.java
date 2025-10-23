@@ -1,6 +1,7 @@
 package com.project.quora.controller;
 
-import com.project.quora.dto.QuestionPageResponseDTO;
+import com.project.quora.dto.CursorPaginatedResponse;
+import com.project.quora.dto.PaginatedResponse;
 import com.project.quora.dto.QuestionRequestDTO;
 import com.project.quora.dto.QuestionResponseDTO;
 import com.project.quora.service.IQuestionService;
@@ -21,17 +22,21 @@ public class QuestionController {
         return questionService.getQuestionById(id);
     }
 
-    @GetMapping
-    Flux<QuestionResponseDTO> getAllQuestions() {
-        return questionService.getAllQuestions();
-    }
-
-    @GetMapping(params = {"size"})
-    Flux<QuestionResponseDTO> getPaginatedQuestions(
+    @GetMapping()
+    Mono<CursorPaginatedResponse<QuestionResponseDTO>> getPaginatedQuestions(
             @RequestParam(required = false) String cursor,
             @RequestParam(defaultValue = "2") int size
     ) {
         return questionService.getPaginatedQuestions(cursor, size);
+    }
+
+    @GetMapping("/search")
+    public Mono<PaginatedResponse<QuestionResponseDTO>> searchQuestionsByTitleContaining(
+            @RequestParam(defaultValue = "Sample") String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size)
+    {
+        return questionService.searchQuestionsByTitleContaining(title, page, size);
     }
 
     @PostMapping
@@ -44,14 +49,5 @@ public class QuestionController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteQuestion(@PathVariable String id) {
         return questionService.deleteQuestionById(id);
-    }
-
-    @GetMapping("/search")
-    public Mono<QuestionPageResponseDTO> searchQuestionsByTitleContaining(
-            @RequestParam(defaultValue = "Sample") String title,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size)
-    {
-        return questionService.searchQuestionsByTitleContaining(title, page, size);
     }
 }
