@@ -20,4 +20,6 @@ public interface IQuestionService {
     Mono<PaginatedResponse<QuestionResponseDTO>> searchQuestionsByTitleContaining(String title, int page, int size);
 
     Mono<CursorPaginatedResponse<QuestionResponseDTO>> getPaginatedQuestions(String cursor, int size);
+
+    Mono<CursorPaginatedResponse<QuestionResponseDTO>> pollNewQuestions(String cursor, int size);
 }

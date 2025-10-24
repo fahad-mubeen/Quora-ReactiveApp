@@ -30,6 +30,14 @@ public class QuestionController {
         return questionService.getPaginatedQuestions(cursor, size);
     }
 
+    @GetMapping("/poll")
+    public Mono<CursorPaginatedResponse<QuestionResponseDTO>> pollNewQuestions(
+            @RequestParam String cursor,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return questionService.pollNewQuestions(cursor, size);
+    }
+
     @GetMapping("/search")
     public Mono<PaginatedResponse<QuestionResponseDTO>> searchQuestionsByTitleContaining(
             @RequestParam(defaultValue = "Sample") String title,

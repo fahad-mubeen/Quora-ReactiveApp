@@ -1,6 +1,5 @@
 package com.project.quora.service;
 
-
 import com.project.quora.dto.*;
 import com.project.quora.enums.TargetType;
 import com.project.quora.event.ViewCountEvent;
@@ -162,5 +161,47 @@ public class QuestionService implements IQuestionService {
                     .pagination(meta)
                     .build();
         });
+    }
+
+    @Override
+    public Mono<CursorPaginatedResponse<QuestionResponseDTO>> pollNewQuestions(String cursor, int size) {
+        final int effectiveSize = Math.max(1, size);
+        Pageable pageable = PageRequest.of(0, effectiveSize, Sort.by("createdAt").descending());
+
+        if (!CursorUtils.isValidCursor(cursor)) {
+            return Mono.error(new IllegalArgumentException("A valid cursor is required for polling."));
+        }
+
+        LocalDateTime cursorTimeStamp = CursorUtils.parseCursor(cursor);
+        Flux<Question> questionFlux = questionRepository
+                .findByCreatedAtGreaterThanOrderByCreatedAtDesc(cursorTimeStamp, pageable);
+
+        return questionFlux.collectList()
+                .map(questions -> {
+
+                    List<QuestionResponseDTO> dtoList = questions.stream()
+                            .map(QuestionMapper::toQuestionResponseDTO)
+                            .collect(Collectors.toList());
+
+                    String newCursor = cursor;
+                    if (!questions.isEmpty()) {
+                        Question newestQuestion = questions.get(0);
+                        newCursor = CursorUtils.createCursor(newestQuestion.getCreatedAt());
+                    }
+
+                    CursorPaginationMeta meta = CursorPaginationMeta.builder()
+                            .nextCursor(newCursor)
+                            .hasMore(false)
+                            .pageSize(effectiveSize)
+                            .build();
+
+                    return CursorPaginatedResponse.<QuestionResponseDTO>builder()
+                            .data(dtoList)
+                            .pagination(meta)
+                            .build();
+                })
+                .doOnError(err -> {
+                    System.err.println("Error polling new questions: " + err.getMessage());
+                });
     }
 }
