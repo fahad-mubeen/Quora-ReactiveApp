@@ -5,6 +5,7 @@ import com.project.quora.dto.AnswerResponseDTO;
 import com.project.quora.dto.PaginatedResponse;
 import com.project.quora.dto.PaginationMeta;
 import com.project.quora.enums.TargetType;
+import com.project.quora.event.AnswerCreatedEvent;
 import com.project.quora.event.ViewCountEvent;
 import com.project.quora.mapper.AnswerMapper;
 import com.project.quora.model.Answer;
@@ -31,7 +32,21 @@ public class AnswerService implements IAnswerService {
     @Override
     public Mono<AnswerResponseDTO> createAnswer(AnswerRequestDTO answerRequestDTO) {
         Answer answer = AnswerMapper.toAnswer(answerRequestDTO);
-        return answerRepository.save(answer).map(AnswerMapper::toAnswerResponseDTO);
+        return answerRepository.save(answer)
+                .map(AnswerMapper::toAnswerResponseDTO)
+                .doOnError(err -> System.out.println("Error creating answer: " + err.getMessage()))
+                .doOnSuccess(res -> {
+                    kafkaEventProducer.publishAnswerCreatedEvent(
+                            AnswerCreatedEvent.builder()
+                                    .answerId(answer.getId())
+                                    .questionId(answer.getQuestionId())
+                                    .answerAuthorId("user") // TODO: replace with actual user ID
+                                    .questionAuthorId("user") // TODO: replace with actual user ID
+                                    .answerText(answer.getContent())
+                                    .timestamp(LocalDateTime.now())
+                                    .build()
+                    );
+                });
     }
 
     @Override
@@ -100,6 +115,15 @@ public class AnswerService implements IAnswerService {
         Pageable pageable = PageRequest.of(page, effectiveSize, Sort.by("createdAt").descending());
         Mono<List<AnswerResponseDTO>> pageDataMono = answerRepository.findByQuestionId(questionId, pageable)
                 .map(AnswerMapper::toAnswerResponseDTO)
+                .doOnNext(answerDTO -> {
+                    kafkaEventProducer.publishViewCountEvent(
+                            ViewCountEvent.builder()
+                                    .targetId(answerDTO.getId())
+                                    .targetType(TargetType.ANSWER)
+                                    .timestamp(LocalDateTime.now())
+                                    .build()
+                    );
+                })
                 .collectList();
         Mono<Long> totalCountMono = answerRepository.countByQuestionId(questionId);
 

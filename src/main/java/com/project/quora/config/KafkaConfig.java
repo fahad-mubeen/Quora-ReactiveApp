@@ -23,13 +23,8 @@ public class KafkaConfig {
     @Value("${kafka.bootstrap-server:localhost:9092}")
     private String bootstrapServer;
 
-    public static final String consumerGroupId = "view-count-consumer-group";
-
-    public static final String TOPIC_NAME = "view-count-topic";
-
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
-        // Configuration for Kafka ProducerFactory goes here
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -40,12 +35,10 @@ public class KafkaConfig {
 
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
-        // Configuration for Kafka ConsumerFactory goes here
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupId);
         configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
