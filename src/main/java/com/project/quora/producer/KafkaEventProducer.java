@@ -2,6 +2,7 @@ package com.project.quora.producer;
 
 import com.project.quora.config.KafkaConfig;
 import com.project.quora.event.AnswerCreatedEvent;
+import com.project.quora.event.QuestionUpdateEvent;
 import com.project.quora.event.ViewCountEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,5 +19,9 @@ public class KafkaEventProducer {
 
     public void publishAnswerCreatedEvent(AnswerCreatedEvent answerCreatedEvent) {
         kafkaTemplate.send("answer-created-topic", answerCreatedEvent);
+    }
+
+    public void publishQuestionUpdateEvent(QuestionUpdateEvent event) {
+        kafkaTemplate.send("question-updates", event.getQuestionId(), event);
     }
 }

@@ -2,6 +2,7 @@ package com.project.quora.service;
 
 import com.project.quora.dto.*;
 import com.project.quora.enums.TargetType;
+import com.project.quora.event.QuestionUpdateEvent;
 import com.project.quora.event.ViewCountEvent;
 import com.project.quora.mapper.QuestionMapper;
 import com.project.quora.model.Question;
@@ -38,6 +39,9 @@ public class QuestionService implements IQuestionService {
         return response
                 .doOnSuccess(res -> {
                     System.out.println("Question created with ID: " + res.getId());
+                    kafkaEventProducer.publishQuestionUpdateEvent(
+                            QuestionUpdateEvent.builder().questionId(res.getId()).build()
+                    );
                 })
                 .doOnError(err -> {
                     System.err.println("Error creating question: " + err.getMessage());
