@@ -3,6 +3,7 @@ package com.project.quora.mapper;
 import com.project.quora.dto.QuestionRequestDTO;
 import com.project.quora.dto.QuestionResponseDTO;
 import com.project.quora.model.Question;
+import com.project.quora.model.QuestionDocument;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,34 @@ public class QuestionMapper {
                 .viewCount(question.getViewCount())
                 .createAt(question.getCreatedAt())
                 .updatedAt(question.getUpdatedAt())
+                .build();
+    }
+
+    public static QuestionDocument toQuestionDocument(Question question) {
+        if (question == null) {
+            return null;
+        }
+        return QuestionDocument.builder()
+                .id(question.getId())
+                .title(question.getTitle())
+                .content(question.getContent())
+                .viewCount(question.getViewCount())
+                .createdAt(question.getCreatedAt())
+                .updatedAt(question.getUpdatedAt())
+                .build();
+    }
+
+    public static Question toQuestion(QuestionDocument questionDocument) {
+        if (questionDocument == null) {
+            return null;
+        }
+        return Question.builder()
+                .id(questionDocument.getId())
+                .title(questionDocument.getTitle())
+                .content(questionDocument.getContent())
+                .viewCount(questionDocument.getViewCount())
+                .createdAt(questionDocument.getCreatedAt())
+                .updatedAt(questionDocument.getUpdatedAt())
                 .build();
     }
 }
