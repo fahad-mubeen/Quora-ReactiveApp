@@ -4,9 +4,12 @@ import com.project.quora.dto.CursorPaginatedResponse;
 import com.project.quora.dto.PaginatedResponse;
 import com.project.quora.dto.QuestionRequestDTO;
 import com.project.quora.dto.QuestionResponseDTO;
+import com.project.quora.dto.SearchRequestDTO;
+import com.project.quora.service.IElasticSearchService;
 import com.project.quora.service.IQuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -15,6 +18,12 @@ import reactor.core.publisher.Mono;
 public class QuestionController {
 
     private final IQuestionService questionService;
+    private final IElasticSearchService elasticSearchService;
+
+    @PostMapping("/elasticsearch")
+    public Flux<QuestionResponseDTO> searchQuestions(@RequestBody SearchRequestDTO searchRequestDTO) {
+        return elasticSearchService.searchQuestions(searchRequestDTO.getQuery());
+    }
 
     @GetMapping("/{id}")
     Mono<QuestionResponseDTO> getQuestionById(@PathVariable String id) {
@@ -32,8 +41,7 @@ public class QuestionController {
     @GetMapping("/poll")
     public Mono<CursorPaginatedResponse<QuestionResponseDTO>> pollNewQuestions(
             @RequestParam String cursor,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+            @RequestParam(defaultValue = "10") int size) {
         return questionService.pollNewQuestions(cursor, size);
     }
 
@@ -41,8 +49,7 @@ public class QuestionController {
     public Mono<PaginatedResponse<QuestionResponseDTO>> searchQuestionsByTitleContaining(
             @RequestParam(defaultValue = "Sample") String title,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size)
-    {
+            @RequestParam(defaultValue = "10") int size) {
         return questionService.searchQuestionsByTitleContaining(title, page, size);
     }
 

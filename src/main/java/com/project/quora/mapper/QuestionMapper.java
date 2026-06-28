@@ -56,4 +56,18 @@ public class QuestionMapper {
                 .updatedAt(questionDocument.getUpdatedAt())
                 .build();
     }
+
+    public static QuestionResponseDTO toQuestionResponseDTO(QuestionDocument questionDocument) {
+        if (questionDocument == null) {
+            return null;
+        }
+        return QuestionResponseDTO.builder()
+                .id(questionDocument.getId())
+                .title(questionDocument.getTitle())
+                .content(questionDocument.getContent())
+                .viewCount(questionDocument.getViewCount())
+                .createAt(questionDocument.getCreatedAt())
+                .updatedAt(questionDocument.getUpdatedAt())
+                .build();
+    }
 }
